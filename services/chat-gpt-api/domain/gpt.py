@@ -5,8 +5,6 @@ from typing import Dict
 
 from framework.serialization import Serializable
 
-from domain.rest import ChatGptProxyResponse
-
 
 def get_timestamp() -> int:
     return int(
@@ -95,3 +93,30 @@ class ChatGptHistoryRecord(Serializable):
                 .get('response', dict())
                 .get('body', dict())
                 .get('data', dict()))
+
+
+class InternalChatCompletionRequest(Serializable):
+    def __init__(
+        self,
+        prompt: str
+    ):
+        self.__prompt = prompt
+
+    def to_dict(self) -> Dict:
+        return {
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": self.__prompt
+                },
+
+            ],
+            "temperature": 1,
+            "top_p": 1,
+            "n": 1,
+            "stream": False,
+            "max_tokens": 250,
+            "presence_penalty": 0,
+            "frequency_penalty": 0
+        }

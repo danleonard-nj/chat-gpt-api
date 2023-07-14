@@ -12,7 +12,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from clients.event_client import EventClient
 from clients.identity_client import IdentityClient
 from clients.storage_client import StorageClient
+from data.chat_gpt_internal_repository import ChatGptInternalRepository
 from data.chat_gpt_repository import ChatGptRepository
+from services.chat_gpt_internal_service import ChatGptInternalService
 from services.chat_gpt_proxy_service import ChatGptProxyService
 
 
@@ -72,7 +74,6 @@ def configure_http_client(
     return AsyncClient(timeout=None)
 
 
-
 class ContainerProvider(ProviderBase):
     @classmethod
     def configure_container(cls):
@@ -82,7 +83,7 @@ class ContainerProvider(ProviderBase):
         service_descriptors.add_singleton(
             dependency_type=AzureAd,
             factory=configure_azure_ad)
-        
+
         service_descriptors.add_singleton(
             dependency_type=AsyncClient,
             factory=configure_http_client)
@@ -98,8 +99,10 @@ class ContainerProvider(ProviderBase):
 
         # Repositories
         service_descriptors.add_singleton(ChatGptRepository)
+        service_descriptors.add_singleton(ChatGptInternalRepository)
 
         # Services
         service_descriptors.add_transient(ChatGptProxyService)
+        service_descriptors.add_transient(ChatGptInternalService)
 
         return service_descriptors

@@ -4,7 +4,6 @@ from framework.serialization import Serializable
 from quart import Response
 
 
-
 class ChatGptResponse(Serializable):
     def __init__(
         self,
@@ -98,3 +97,11 @@ class ChatGptHistoryEndpointsResponse(Serializable):
             'endpoints': list(grouped.keys()),
             'data': grouped
         }
+
+
+class ChatGptInternalChatCompletionRequest(Serializable):
+    def __init__(
+        self,
+        data: Dict
+    ):
+        self.prompt = data.get('prompt')

@@ -8,6 +8,7 @@ from quart import Quart
 
 from routes.chatgpt import chatgpt_bp
 from routes.health import health_bp
+from routes.internal import internal_bp
 from utilities.provider import ContainerProvider
 
 logging.getLogger().setLevel(level=logging.INFO)
@@ -19,6 +20,7 @@ app = Quart(__name__)
 
 app.register_blueprint(health_bp)
 app.register_blueprint(chatgpt_bp)
+app.register_blueprint(internal_bp)
 
 
 ContainerProvider.initialize_provider()
