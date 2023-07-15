@@ -1,3 +1,4 @@
 framework==0.2.7
 uvicorn
 azure-storage-blob
+aiohttp
