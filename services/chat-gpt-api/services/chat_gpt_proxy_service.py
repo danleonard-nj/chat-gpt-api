@@ -186,7 +186,7 @@ class ChatGptProxyService:
             self.__cache_client.set_json(
                 key=key,
                 value=result.to_dict(),
-                ttl=60 * 24 * 7))
+                ttl=60 * 24))
 
         if capture_history:
             # Capture history async
