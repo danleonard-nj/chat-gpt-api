@@ -75,17 +75,25 @@ class ChatGptProxyService:
         logger.info(f'Image urls: {image_urls}')
 
         if not any(image_urls):
+            logger.info(f'No images to store')
             return
 
         async def save_image(
             url: str,
             index: int
         ):
+            logger.info(f'Fetching image data: {url}')
             response = await self.__http_client.get(
                 url=url)
 
-            if response.status_code != 200:
+            logger.info(f'Status: {response.status_code}')
+
+            if not response.is_success:
                 logger.error(f'Failed to store image: {url}')
+
+                logger.info(f'Headers: {dict(response.headers)}')
+
+                logger.info(f'Body: {response.text}')
                 return
 
             await self.__storage_client.upload_blob(
