@@ -20,7 +20,7 @@ probes:
     liveness: "/api/health/alive"
     readiness: "/api/health/ready"
   initialDelay: 5
-  interval: 60
+  interval: 45
   timeout: 120
 
 serviceAccount:
@@ -44,7 +44,7 @@ resources:
     memory: 300Mi
     
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 85
