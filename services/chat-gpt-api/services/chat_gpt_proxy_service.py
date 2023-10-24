@@ -72,8 +72,8 @@ class ChatGptProxyService:
 
         logger.info(f'Capturing images: {image_urls}')
 
-        image_urls = [x.get('url') for x in image_urls]
-        logger.info(f'Image urls: {image_urls}')
+        # image_urls = [x.get('url') for x in image_urls]
+        # logger.info(f'Image urls: {image_urls}')
 
         if not any(image_urls):
             return
