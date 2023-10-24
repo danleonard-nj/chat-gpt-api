@@ -13,7 +13,7 @@ from data.chat_gpt_repository import ChatGptRepository
 from domain.gpt import ChatGptHistoryRecord
 from domain.rest import (ChatGptHistoryEndpointsResponse, ChatGptProxyResponse,
                          ChatGptResponse)
-from utilities.utils import IMAGE_HEADERS, DateTimeUtil, KeyUtils, decode_url
+from utilities.utils import IMAGE_HEADERS, IMAGE_ENDPOINT, DateTimeUtil, KeyUtils, decode_url
 
 CONTENT_TYPE = 'application/json'
 BLOB_CONTAINER_NAME = 'chatgpt-image-results'
