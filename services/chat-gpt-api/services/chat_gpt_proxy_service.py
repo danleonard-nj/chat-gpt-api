@@ -91,7 +91,8 @@ class ChatGptProxyService:
             logger.info(f'Decoded url: {decoded}')
 
             response = await self.__http_client.get(
-                url=decoded,
+                #url=decoded,
+                url=url,
                 follow_redirects=True,
                 headers=IMAGE_HEADERS,
                 timeout=None
