@@ -1,26 +1,38 @@
 import asyncio
 import time
+import urllib.parse
 import uuid
 from typing import Dict
-
-from framework.clients.cache_client import CacheClientAsync
-from framework.configuration import Configuration
-from framework.logger import get_logger
-from framework.uri import build_url
-from httpx import AsyncClient
 
 from clients.storage_client import StorageClient
 from data.chat_gpt_repository import ChatGptRepository
 from domain.gpt import ChatGptHistoryRecord
 from domain.rest import (ChatGptHistoryEndpointsResponse, ChatGptProxyResponse,
                          ChatGptResponse)
+from framework.clients.cache_client import CacheClientAsync
+from framework.configuration import Configuration
+from framework.logger import get_logger
+from framework.uri import build_url
+from httpx import AsyncClient
 from utilities.utils import DateTimeUtil, KeyUtils
-
-logger = get_logger(__name__)
 
 CONTENT_TYPE = 'application/json'
 BLOB_CONTAINER_NAME = 'chatgpt-image-results'
 IMAGE_ENDPOINT = '/v1/images/generations'
+
+IMAGE_HEADERS = {
+    'Host': 'oaidalleapiprodscus.blob.core.windows.net',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Content-Type': '*/*'
+}
+
+
+logger = get_logger(__name__)
+
+
+def decode_url(url: str) -> str:
+    return urllib.parse.unquote(url)
 
 
 class ChatGptProxyService:
@@ -64,6 +76,7 @@ class ChatGptProxyService:
         history_id: str,
         result: ChatGptProxyResponse
     ):
+
         # List of result images
         image_urls = (
             result.response
@@ -71,11 +84,13 @@ class ChatGptProxyService:
             .get('data', [])
         )
 
+        logger.info(f'Capturing images: {image_urls}')
+
         image_urls = [x.get('url') for x in image_urls]
+
         logger.info(f'Image urls: {image_urls}')
 
         if not any(image_urls):
-            logger.info(f'No images to store')
             return
 
         async def save_image(
@@ -83,17 +98,25 @@ class ChatGptProxyService:
             index: int
         ):
             logger.info(f'Fetching image data: {url}')
-            response = await self.__http_client.get(
-                url=url)
 
-            logger.info(f'Status: {response.status_code}')
+            logger.info(f'Outbound headers: {IMAGE_HEADERS}')
+
+            decoded = decode_url(url)
+            logger.info(f'Decoded url: {decoded}')
+
+            response = await self.__http_client.get(
+                url=decoded,
+                follow_redirects=True,
+                headers=IMAGE_HEADERS,
+                timeout=None
+            )
+
+            logger.info(f'Request headers: {response.request.headers}')
+            logger.info(f'Response headers: {response.headers}')
 
             if not response.is_success:
-                logger.error(f'Failed to store image: {url}')
-
-                logger.info(f'Headers: {dict(response.headers)}')
-
-                logger.info(f'Body: {response.text}')
+                logger.error(
+                    f'Failed to store image: {url}: {response.status_code}: {response.text}')
                 return
 
             await self.__storage_client.upload_blob(
