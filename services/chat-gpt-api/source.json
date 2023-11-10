@@ -1,6 +1,0 @@
-[
-  {
-    "source": "configs/features/feature-api/config.json",
-    "target": "./services/features-api/config.json"
-  }
-]
