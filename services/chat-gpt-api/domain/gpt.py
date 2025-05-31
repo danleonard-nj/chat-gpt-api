@@ -112,11 +112,10 @@ class InternalChatCompletionRequest(Serializable):
                 },
 
             ],
-            "temperature": 1,
+            "temperature": 0.5,
             "top_p": 1,
             "n": 1,
             "stream": False,
-            "max_tokens": 250,
             "presence_penalty": 0,
             "frequency_penalty": 0
         }
